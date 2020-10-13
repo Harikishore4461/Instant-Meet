@@ -1,0 +1,46 @@
+body{
+    display:grid;
+    margin: 0px;
+    align-items: center;
+    justify-content: center;
+    min-height:100vh;
+}
+.card{
+    border: none;
+    display: flex;
+    flex-direction: row;
+    padding:10px;
+}
+form{
+    border: none;
+}
+input{
+    height: 50px;
+    width: 90%;
+    border-radius: 15px;
+    margin: 20px;
+    outline: none;
+}
+label{
+    color: black;
+}
+.btn1{
+    float: right;
+    margin: 10px;
+    width:100px;
+    height: 40px;
+}
+.btn2{
+    float: right;
+
+    margin-left: 14px;
+    height: 40px;
+}
+span{
+    margin:20px;
+    border:1px solid black;
+}
+.main__roomid{
+    align-items: center;
+    text-align: right;
+}
