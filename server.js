@@ -19,25 +19,34 @@ app.use(cookieParser());
 app.use(express.static("public"))
 app.set('view engine','ejs') 
 app.use(bodyParser.urlencoded({ extended: false }))
-
+let error =''
 app.use('/peerjs',peerServer)
 app.get('/',(req,res)=>{
-    res.render("sigin")
+    res.render("sigin",{error:error})
 })
 
 app.post('/',(req,res)=>{
     let items =req.body;
     items.host = false
+            console.log(items.username)
+            console.log(usersList)
+    for(let i=0;i<usersList.length;i++){
+        if(items.username === usersList[i].name){
+            console.log("errrrrr")
+            let error = "Try any another username"
+            res.render("sigin",{error:error})
+        }
+    }
     res.cookie("context", items , { httpOnly: true });
     res.redirect(`/${req.body.roomid}`)
 })
 
 app.get('/refresh',(req,res)=>{
     // res.end("ok")
-    fs.writeFile('mynewfile1.txt', '', function()
+    fs.writeFile('attendance.txt', '', function()
     {console.log('done')})
     for (let index = 0; index < usersList.length; index++) {
-    fs.appendFile(`mynewfile1.txt`, `\n ${usersList[index].name}`, function (err) {
+    fs.appendFile(`attendance.txt`, `\n ${usersList[index].name}`, function (err) {
     if (err) throw err;
     console.log('Saved!');
     });
@@ -46,7 +55,7 @@ app.get('/refresh',(req,res)=>{
 })
 app.get('/atte',(req,res)=>{
 
-   res.download(__dirname +`/mynewfile1.txt`);   
+   res.download(__dirname +`/attendance.txt`);   
 
 })
 app.post('/room', (req, res) => {
@@ -177,4 +186,4 @@ io.on('connection',socket=>{
 })
 
 
-server.listen(5000,()=>console.log("server runs on 5000"))
+server.listen(process.env.PORT || 3030,()=>console.log("server runs on 3030"))

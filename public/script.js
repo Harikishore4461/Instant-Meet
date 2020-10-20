@@ -14,7 +14,7 @@ let currentUsers = []
 var peer = new Peer(undefined,{
     path:'/peerjs',
     host:'/',
-    port:'5000'
+    port:'443'
 }); 
 console.log(USERS)
 currentUsers.push(USERS)
@@ -115,7 +115,10 @@ const displayNewuser = (name=>{
 })
 
 const displayUsersList = list =>{
-    let html = `<li  class="user__list"><h3>${list.length} Joined</h3></li>`
+    let html = `<li  class="user__list"><h3>${list.length} Joined</h3></li>
+    <h6>${Data.host ?'Host can Mute and Kick Others': ''}</h6>
+    <br/> 
+    `
     document.querySelector('.main__right__usersList').innerHTML = html;
     for( i=0; i<list.length ; i++){
         let html = `<li class="user__list"><h6 class="text-dark">${list[i].name}</h6>
@@ -286,6 +289,7 @@ Stop.addEventListener("click", () => {
 
 $('#start').css('visibility','visible')
 $('#stop').css('visibility','hidden')
+$('.record__video').css('visibility','visible')
   recorder.stop();
   stream.getVideoTracks()[0].stop();
 });

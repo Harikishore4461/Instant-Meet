@@ -1,10 +1,11 @@
 #display{
     flex:0.6;
     display:flex;
-    flex-direction:row;
+    /* flex-direction:row; */
     flex-grow: 1;
     background: black;
-    height: 88vh;
+    /* height: 88vh; */
+    padding:40px;
     align-items: center;
     justify-content: center;
 }
@@ -21,8 +22,8 @@
 }
 video{
     margin:10px;
-    height:500px;
-    width:500px;
+    height:800px;
+    width:800px;
     cursor:pointer;
 }
 .main{
@@ -145,7 +146,7 @@ h4 {
     .leave_meeting{
         color:tomato;
         cursor: pointer;
-        margin-left:70px;
+        margin-left:100px;
     }
     .record__video{
         margin-left: 100px;
