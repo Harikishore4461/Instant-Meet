@@ -15,10 +15,10 @@ form{
     border: none;
 }
 input{
-    height: 50px;
-    width: 90%;
+    height: 50px !important;
+    width: 90% !important;
     border-radius: 15px;
-    margin: 20px;
+    margin: 20px !important;
     outline: none;
 }
 label{

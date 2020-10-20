@@ -22,17 +22,24 @@
     <script>
         const ROOM_ID = "<%= roomid %>";
        var Data = JSON.parse('<%-JSON.stringify(list)%>');
+       
+        var list = JSON.parse('<%-JSON.stringify(userList)%>');
+
         const USERS = Data.username;
-        console.log(Data)
+        console.log(list.length)
         console.log(USERS)
     </script>
 </head>
 <body>
     <div class="main">
         <div class="main__left">
-            <div id="display"></div>
-            <div id="list_display"></div>
-            <!-- <div id="list_user"><h1>   </h1></div> -->
+            <div id="display">                 
+            </div>
+            <div id="list_display">
+                <video class="record__video" width="220" height="240" controls>
+                    <source type="video/mp4">
+                </video>
+            </div>
             <div class="left__controls">
                 <div class="main__controls1">
                     <span class="icons__name main__mute_button" style="font-size: 30px; color: white;">
@@ -52,7 +59,31 @@
                             <i class="fas fa-comments"></i>
                             <span style="font-size:18px">chat</span>
                         </span>
-                        <!-- <p class="main__roomid"><%= roomid %></p> -->
+                        <span id="start" class="icons__name main__record__button" style="font-size: 30px; color: white;">
+                         
+                                <i  class="fas fa-record-vinyl"></i>
+                                <span style="font-size:18px">Record</span>
+                                    
+                        </span>
+                        <span id="stop" class="icons__name main__record__button" style="font-size: 30px; color: white;visibility:hidden;">
+                                <i class="unmute fas fa-stop"></i>
+                                <span style="font-size:18px">Stop</span>
+                        </span>
+                        <span class="icons__name main__control__hand" style="font-size: 30px; color: white;">
+                            <i onclick="handPaper()"  class=" fas fa-hand-paper"></i>
+                            <span style="font-size:18px">Raise</span>
+                        </span>
+                        <span id="startScreen" class="icons__name main__control__hand" style="font-size: 30px; color: white;">
+                            <i class=" fas fa-desktop"></i>
+                            <span style="font-size:18px">Share Screen</span>
+                        </span>
+                     
+                        <div class="main__controls__block">
+                            <div class="main__controls__button">
+                                <p onclick="leaveMeeting()" class="leave_meeting">Leave Meeting</p>
+                            </div>
+                        </div>
+                        
                     </div> 
                 </div>
             </div>
@@ -69,17 +100,29 @@
                 </div>
             </div>
             <div style="display:none;" class="userslist">
-                <ul class="main__right__usersList">
-                    List of users
-                </ul>
-                <form method="GET" action="http://localhost:5000/atte" >
-                  <button type="submit">Attendance</button>
-                </form>
-            </div>
-                    
+                <div class="usersList__scroll">
+                        <ul class="main__right__usersList">
+                            List of users
+                        </ul>
+                </div>
+                <div class="bottomUsersList">
+                    <div class="attendance">
+                        <form method="GET" action="http://localhost:5000/refresh">
+                            <button class="btn btn-dark" type="submit">Refresh</button>
+                        </form>
+                        <form method="GET" action="http://localhost:5000/atte">
+                            <button class="btn btn-info" type="submit">Attendance</button>
+                        </form>
+                    </div>
+                        <div class="roominfo">
+                            <p>
+                            <h6>ROOM ID:</h6><%= roomid %></p>
+                        </div>
+                </div>
+            </div>                   
         </div>
     </div>
- 
     <script src="script.js"></script>
+    <!-- <script src="shareScreen.js"></script> -->
 </body>
 </html>

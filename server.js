@@ -6,6 +6,7 @@ const server = require("http").createServer(app);
 const bodyParser = require('body-parser')
 const { v4:uuidv4 } = require('uuid')
 const io = require("socket.io")(server);
+const ss = require('socket.io-stream')
 const http = require('http')
 // PEER CONNECTION ESTABLISHMET
 const { ExpressPeerServer } = require("peer");
@@ -23,34 +24,30 @@ app.use('/peerjs',peerServer)
 app.get('/',(req,res)=>{
     res.render("sigin")
 })
+
 app.post('/',(req,res)=>{
     let items =req.body;
     items.host = false
     res.cookie("context", items , { httpOnly: true });
     res.redirect(`/${req.body.roomid}`)
 })
-var download = function(url, dest, cb) {
-  var file = fs.createWriteStream(dest);
-  var request = http.get(url, function(response) {
-    response.pipe(file);
-    file.on('finish', function() {
-      file.close(cb);  // close() is async, call cb after close completes.
-    });
-  }).on('error', function(err) { // Handle errors
-    fs.unlink(dest); // Delete the file async. (But we don't check the result)
-    if (cb) cb(err.message);
-  });
-};
-app.get('/atte',(req,res)=>{
+
+app.get('/refresh',(req,res)=>{
+    // res.end("ok")
     fs.writeFile('mynewfile1.txt', '', function()
     {console.log('done')})
     for (let index = 0; index < usersList.length; index++) {
-    fs.appendFile(`mynewfile1.txt`, `\n ${usersList[index]}`, function (err) {
+    fs.appendFile(`mynewfile1.txt`, `\n ${usersList[index].name}`, function (err) {
     if (err) throw err;
     console.log('Saved!');
     });
-   res.download(__dirname +`/mynewfile1.txt`);   
 }
+    res.status(204).send()
+})
+app.get('/atte',(req,res)=>{
+
+   res.download(__dirname +`/mynewfile1.txt`);   
+
 })
 app.post('/room', (req, res) => {
        let items ={
@@ -64,31 +61,118 @@ app.post('/room', (req, res) => {
 app.get('/:id',(req,res)=>{
     var context = req.cookies["context"];
     res.clearCookie("context", { httpOnly: true });
-    console.log(context)
-    res.render("room", { roomid: req.params.id ,list:context});
+
+    res.render("room", { roomid: req.params.id ,list:context,userList:usersList});
 })
 io.on('connection',socket=>{
-    // Disconnection
     socket.on('join-room', (roomId,userId,user) => {
           socket.on('disconnect', () => {
             console.log(user + ' Got disconnect!');
             for (let i = 0; i < usersList.length; i++) {
-                if(usersList[i]===user){
+                if(usersList[i].name===user){
                     usersList.splice(i,1)
                 }                              
             }
-            // socket.to(roomId).broadcast.emit('user-disconnected',userId);
-            // socket.leave(roomId)
+            io.to(roomId).emit('refresh',usersList)
+            socket.to(roomId).broadcast.emit('user-disconnected',userId);
+            socket.leave(roomId)
         });
+    //        socket.on('disconnect', () => {
+    //   socket.to(roomId).broadcast.emit('user-disconnected', userId)
+    // })
+        socket.on('screen-shared',(src)=>{
+            //  const _srcObject = ss.createStream();
+            console.log(src)
+           
+            io.to(roomId).emit('share-screen',src);
+        })
         socket.on('message',message =>{
             io.to(roomId).emit('createMessage',message)
         })
-      
-        usersList.push(user)
-        console.log(usersList)
+        /* MUTE AND UNMUTE */
+        socket.on('user-muted',(user)=>{
+            console.log(user+" muted")
+            for(let i=0;i<usersList.length;i++){
+                if(user===usersList[i].name){
+                    usersList[i].audio=false
+                }
+            }
+            io.to(roomId).emit('refresh',usersList)
+        })
+         socket.on('user-unmuted',(user)=>{
+            console.log(user+" unmuted")
+               for(let i=0;i<usersList.length;i++){
+                if(user===usersList[i].name){
+                    usersList[i].audio=true
+                }
+            }
+            io.to(roomId).emit('refresh',usersList)
+        })
+        /* VIDEO ON AND OFF */
+        socket.on('user-video-off',(user)=>{
+            console.log(user+" off")
+               for(let i=0;i<usersList.length;i++){
+                if(user===usersList[i].name){
+                    usersList[i].video=false
+                }
+            }
+            io.to(roomId).emit('refresh',usersList)
+        })
+        socket.on('user-video-on',(user)=>{
+            console.log(user+" on")
+               for(let i=0;i<usersList.length;i++){
+                if(user===usersList[i].name){
+                    usersList[i].video=true
+                }
+            }
+            io.to(roomId).emit('refresh',usersList)
+        })
+        socket.on('user-raise',(name)=>{
+             for(let i=0;i<usersList.length;i++){
+                if(name===usersList[i].name){
+                    usersList[i].hand=true
+                }
+            }
+            io.to(roomId).emit('refresh',usersList)
+        })
+          socket.on('user-down',(name)=>{
+             for(let i=0;i<usersList.length;i++){
+                if(name===usersList[i].name){
+                    usersList[i].hand=false
+                }
+            }
+            io.to(roomId).emit('refresh',usersList)
+        })
+        /* MUTE THE USER */
+        socket.on('mute-the-user',name=>{
+            for(let i=0;i<usersList.length;i++){
+                if(name===usersList[i].name){
+                    usersList[i].audio=false
+                }
+            }
+            io.to(roomId).emit('refresh-muted',usersList,name)
+        })
+        // BLOCK THE USER
+        socket.on('block-the-user',name=>{
+              for (let i = 0; i < usersList.length; i++) {
+                if(usersList[i].name===name){
+                    usersList.splice(i,1)
+                }                              
+            }
+            io.to(roomId).emit('refresh',usersList)
+            io.to(roomId).emit('make-user-leave',name)
+        })
+        let userinfo = {
+            name:user,
+            id:userId,
+            audio:true,
+            video:true,
+            hand:false
+        }
+        usersList.push(userinfo)
+     
         socket.join(roomId)
         socket.to(roomId).broadcast.emit('user-connected',userId,user,usersList);
-
     });
 })
 

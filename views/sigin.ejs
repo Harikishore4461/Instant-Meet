@@ -12,15 +12,15 @@
     <div class="card">
         <form method="POST" action="http://localhost:5000">
             <label>Username</label>
-            <input required class="" type="text" placeholder="Enter your name" name="username" id="username" />
+            <input required class="form-control" type="text" placeholder="Enter your name" name="username" id="username" />
             <label>RoomId</label>
-            <input required type="text" placeholder="Enter Roomid" name="roomid" id="roomid" />
+            <input class="form-control" required type="text" placeholder="Enter Roomid" name="roomid" id="roomid" />
             <button class="btn btn-info btn1">Join</button>
         </form>
         <span></span>
         <form method="POST" action="http://localhost:5000/room">
             <label>Username</label>
-            <input required type="text" name="host" />
+            <input class="form-control"  placeholder="Enter your name" required type="text" name="host" />
             <button class="btn btn-warning btn2">Create New Room</button>
         </form>
     </div>
