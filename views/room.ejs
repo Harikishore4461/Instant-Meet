@@ -33,7 +33,9 @@
 <body>
     <div class="main">
         <div class="main__left">
-            <div id="display">                 
+            <div class="dislayScroll">
+                <div id="display">                 
+            </div>
             </div>
             <div id="list_display">
                 <video class="record__video" width="220" height="240" controls style="visibility:hidden;">
@@ -97,6 +99,10 @@
                         </ul>
                     </div>
                     <input class="input__msg" type="text" placeholder="Type your message" />
+                      <form id="uploadForm" action="https://morning-lowlands-10142.herokuapp.com/api/file" enctype="multipart/form-data" method="post">
+                        <input type="file" name="userFile" />
+                        <input class="btn btn-info upload" type="submit" value="Upload File" name="submit">
+                    </form>
                 </div>
             </div>
             <div style="display:none;" class="userslist">
@@ -107,7 +113,7 @@
                 </div>
                 <div class="bottomUsersList">
                     <div class="attendance">
-                        <form method="GET" action="https://morning-lowlands-10142.herokuapp.com/refresh">
+                        <form method="GET" action="https://morning-lowlands-10142.herokuapp.com/refresh/<%= roomid %>">
                             <button class="btn btn-dark" type="submit">Refresh</button>
                         </form>
                         <form method="GET" action="https://morning-lowlands-10142.herokuapp.com/atte">

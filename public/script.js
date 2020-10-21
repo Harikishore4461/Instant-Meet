@@ -27,12 +27,13 @@ navigator.mediaDevices.getUserMedia({
 .then(stream=>{
     myVideoStream = stream;
     myVideoStream1 = stream;
-    addVideoStream(myVideo,myVideoStream)
+    addVideoStream(myVideo,myVideoStream,USERS)
     usersList.push({
         name:USERS,
         audio:true,
         video:true,
-        hand:false
+        hand:false,
+        host:Data.host
     })
     if(list){
         console.log(list.length)
@@ -62,7 +63,7 @@ navigator.mediaDevices.getUserMedia({
 
     socket.on('user-connected', (userId,username,list) => {
         console.log("new user")
-        connectToNewuser(userId, myVideoStream);
+        connectToNewuser(userId, myVideoStream,username);
         displayNewuser(username)
         displayUsersList(list)
     });
@@ -72,7 +73,13 @@ navigator.mediaDevices.getUserMedia({
         connectToNewuser(userId, screenStream);
       
     })
-
+    $('.upload').click(()=>{
+        socket.emit("file-submit")
+    })
+    socket.on('file-shared',src=>{
+        console.log(src)
+        shareTheFile(src)
+    })
     // socket.on('user-disconnected', (id) => {
     //     console.log(`${id}  disconneted:(`)
     // })
@@ -82,22 +89,35 @@ navigator.mediaDevices.getUserMedia({
     
 })
 
-const connectToNewuser = (userId,stream) =>{
+peer.on('open',(id)=>{
+    userId = id
+    socket.emit("join-room", ROOM_ID ,id,USERS,Data.host);
+})
+const shareTheFile = (src) =>{
+    let html = `<li class="chat__convo"><h5>${src}</h5><form action="https://morning-lowlands-10142.herokuapp.com/download${src}" method="GET"><button class="btn btn-warning" type="submit">Download File</button></form></li>`;
+      
+    $('.chat__messages__list').append(html) 
+}
+
+const connectToNewuser = (userId,stream,name) =>{
     console.log("new user")
     const call = peer.call(userId,stream);
     const video = document.createElement("video")
-    video.id = USERS
+    // video.id = name
+    video.setAttribute("id", `${name}`);
     call.on('stream',userVideoStream=>{
-        addVideoStream(video,userVideoStream)
+        addVideoStream(video,userVideoStream,name)
     })
 }
-const addVideoStream = (video,stream) =>{
+const addVideoStream = (video,stream,name) =>{
     console.log(stream)
     video.srcObject = stream;
+    video.setAttribute("title", `${name}`);
     video.addEventListener('loadedmetadata',()=>{
         video.play();
     });
     let val = document.getElementsByTagName('video')
+    console.log(name)
     if(val.length>3){
         displayList.append(video)
     }
@@ -121,7 +141,7 @@ const displayUsersList = list =>{
     `
     document.querySelector('.main__right__usersList').innerHTML = html;
     for( i=0; i<list.length ; i++){
-        let html = `<li class="user__list"><h6 class="text-dark">${list[i].name}</h6>
+        let html = `<li class="user__list"><h6 class="text-dark">${list[i].name}${list[i].host? '(HOST)' :''}</h6>
         <div class="userslist__icons">
         <i class="unmute fas ${list[i].hand ? 'fa-hand-paper' : ''}"></i>
         <i onclick="MuteTheUser('${list[i].name}')" class="unmute fas ${list[i].audio ? 'fa-microphone' :  'fa-microphone-slash'}"></i>
@@ -239,8 +259,13 @@ let text = $(".input__msg");
     socket.on('createMessage',message=>{
         console.log(message)
         $('.chat__messages__list').append(`<li class="chat__convo">${message}</li>`)
+        scrollToBottom()
     })
 
+const scrollToBottom = () => {
+  var d = $('.chat__messages');
+  d.scrollTop(d.prop("scrollHeight"));
+}
 
 
 $('.main__control__ppl').click(()=>{
@@ -372,7 +397,3 @@ async function startvideo(){
 
 
 
-peer.on('open',(id)=>{
-    userId = id
-    socket.emit("join-room", ROOM_ID ,id,USERS);
-})

@@ -4,10 +4,15 @@
     /* flex-direction:row; */
     flex-grow: 1;
     background: black;
+    overflow:auto;
+     white-space: nowrap;
     /* height: 88vh; */
     padding:40px;
     align-items: center;
     justify-content: center;
+}
+.displayScroll{
+    
 }
 #list_display{
     flex:0.2;
