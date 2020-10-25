@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+<script src="https://kit.fontawesome.com/c939d0e917.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -21,21 +22,15 @@
         crossorigin="anonymous"></script>
     <script>
         const ROOM_ID = "<%= roomid %>";
-       var Data = JSON.parse('<%-JSON.stringify(list)%>');
-       
+       var Data = JSON.parse('<%-JSON.stringify(list)%>');      
         var list = JSON.parse('<%-JSON.stringify(userList)%>');
-
-        const USERS = Data.username;
-        console.log(list.length)
-        console.log(USERS)
+        let USERS = Data.username;
     </script>
 </head>
-<body>
+<body onload="zoom()">
     <div class="main">
         <div class="main__left">
-            <div class="dislayScroll">
-                <div id="display">                 
-            </div>
+            <div id="display">     
             </div>
             <div id="list_display">
                 <video class="record__video" width="220" height="240" controls style="visibility:hidden;">
@@ -75,11 +70,14 @@
                             <i onclick="handPaper()"  class=" fas fa-hand-paper"></i>
                             <span style="font-size:18px">Raise</span>
                         </span>
-                        <span id="startScreen" class="icons__name main__control__hand" style="font-size: 30px; color: white;">
+                        <span id="startScreen" class="icons__name main__control__screen" style="font-size: 30px; color: white;">
                             <i class=" fas fa-desktop"></i>
                             <span style="font-size:18px">Share Screen</span>
                         </span>
-                     
+                        <span id="startScreen" class="icons__name main__torch" style="font-size: 30px; color: white;">
+                            <i class="fas fa-flashlight"></i>
+                            <span style="font-size:18px">Torch</span>
+                        </span>
                         <div class="main__controls__block">
                             <div class="main__controls__button">
                                 <p onclick="leaveMeeting()" class="leave_meeting">Leave Meeting</p>
@@ -96,9 +94,10 @@
                 <div class="chatContent">
                     <div class="chat__messages">
                         <ul class="chat__messages__list">
+                            <p>Click and Drag video around main screen</p>
                         </ul>
                     </div>
-                    <input class="input__msg" type="text" placeholder="Type your message" />
+                    <input class="input__msg form-control" type="text" placeholder="Type your message" />
                       <form id="uploadForm" action="https://morning-lowlands-10142.herokuapp.com/api/file" enctype="multipart/form-data" method="post">
                         <input type="file" name="userFile" />
                         <input class="btn btn-info upload" type="submit" value="Upload File" name="submit">
@@ -112,7 +111,7 @@
                         </ul>
                 </div>
                 <div class="bottomUsersList">
-                    <div class="attendance">
+                    <div style="visibility: hidden;" class="attendance">
                         <form method="GET" action="https://morning-lowlands-10142.herokuapp.com/refresh/<%= roomid %>">
                             <button class="btn btn-dark" type="submit">Refresh</button>
                         </form>
@@ -123,12 +122,16 @@
                         <div class="roominfo">
                             <p>
                             <h6>ROOM ID:</h6><%= roomid %></p>
+                        <a href="https://api.whatsapp.com/send?text= join the meeting using <%= roomid %>" target="_blank">Share in Whatsapp</a>
                         </div>
                 </div>
             </div>                   
         </div>
     </div>
+    <% if(true){ %>
     <script src="script.js"></script>
-    <!-- <script src="shareScreen.js"></script> -->
+    <% } else{ %>  
+        <script src="screen.js"></script>
+    <% } %> 
 </body>
 </html>

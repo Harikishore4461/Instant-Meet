@@ -33,8 +33,7 @@ app.get('/',(req,res)=>{
 app.post('/',(req,res)=>{
     let items =req.body;
     items.host = false
-            console.log(items.username)
-            console.log(usersList)
+
     for(let i=0;i<usersList.length;i++){
         if(items.username === usersList[i].name){
             console.log("errrrrr")
@@ -83,7 +82,6 @@ app.get('/download/:src',(req,res)=>{
       }
   }
 app.post('/api/file', function(req, res) {
-    console.log("FIIILLE")
     var form = new formidable.IncomingForm();
       // specify that we want to allow the user to upload multiple files in a single request
       form.multiples = true;
@@ -107,12 +105,9 @@ app.post('/api/file', function(req, res) {
       });
       // once all the files have been uploaded, send a response to the client
       form.on('end', function() {
-           //res.end('success');
            res.statusMessage = "Process cashabck initiated";
            res.statusCode = 200;
-        //    res.redirect('/')
          res.status(204).send();
-        //    res.end()
         
       });
       // parse the incoming request containing the form data
@@ -153,11 +148,15 @@ io.on('connection',socket=>{
             }
             }
           socket.on('file-submit',async()=>{
-            await new Promise(resolve => setTimeout(resolve, 5000));
+            await new Promise(resolve => setTimeout(resolve, 2000));
             let srcfile = get('')
             console.log(srcfile)
             io.to(roomId).emit('file-shared',srcfile)
           })
+          socket.on('torch',user=>{
+            io.to(roomId).emit('torched-on',user)
+          })
+
           socket.on('disconnect', () => {
             console.log(user + ' Got disconnect!');
             refresh()
@@ -173,7 +172,7 @@ io.on('connection',socket=>{
                 
             }
             io.to(roomId).emit('refresh',roomUsers)
-            socket.to(roomId).broadcast.emit('user-disconnected',userId);
+            socket.to(roomId).broadcast.emit('user-disconnected',userId,user);
             socket.leave(roomId)
         });
   
