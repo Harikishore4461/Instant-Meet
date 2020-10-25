@@ -19,17 +19,26 @@
     background-color: black;
     display:flex;
     flex-direction: row;
+
 }
 #list_display video{
     height:100px;
     width:100px;
-    cursor:pointer;  
+    cursor:pointer;
 }
 video{
-    margin:10px;
+    /* margin:10px; */
     height:500px;
-    width:500px;
+    width:1000px;
     cursor:pointer;
+
+}
+#VideoStreams{
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);  
+}
+.record__video{
+    
 }
 .main{
     display:flex;

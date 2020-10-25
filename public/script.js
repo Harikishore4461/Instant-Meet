@@ -15,11 +15,13 @@ let currentUsers = []
 var peer = new Peer(undefined,{
     path:'/peerjs',
     host:'/',
-    port:'443'
+    port:'3030'
 }); 
-  function zoom() {
-            document.body.style.zoom = "90%" 
-        }
+
+$(window).on('load', function() {
+               document.body.style.zoom = "90%" 
+
+})
 // USERS is just current user name not user list xs for dev
 currentUsers.push(USERS)
 let UserScreen = {}
@@ -61,7 +63,7 @@ navigator.mediaDevices.getUserMedia({
         call.answer(myVideoStream)
         const video = document.createElement('video')
         call.on('stream',userVideoStream=>{
-                addVideoStream(video,userVideoStream,name)
+                addVideoStream(video,userVideoStream)
         })
     })
 
@@ -117,6 +119,10 @@ const connectToNewuser = (userId,stream,name) =>{
         addVideoStream(video,userVideoStream,name)
     })
 }
+ window.addEventListener('beforeunload', function (e) { 
+            e.preventDefault(); 
+            leaveMeeting()
+        }); 
 /* Drag and Drop  */
 function drag(){
 let val = document.querySelectorAll('#VideoStreams')
@@ -125,7 +131,6 @@ for(let i=0;i<val.length;i++){
     const item = val[i]
     val[i].addEventListener('click',()=>{
         displayGrid.append(item);
-       
     })
     val[i].addEventListener('dragstart',()=>{
         displayList.append(item)
@@ -210,14 +215,18 @@ socket.on('make-user-leave',user=>{
         leaveMeeting()
     }
 })
+
 // LEAVE THE MEETING
 function leaveMeeting(){
   const enabled = myVideoStream.getVideoTracks()[0].enabled;
     if(enabled){
     $('.main__video__button').click()
     }
-    socket.emit('disconnect')  
-    window.history.back();
+    setTimeout(()=>{
+        socket.emit('disconnect')  
+         window.history.back();
+    },1500)
+
 }
 
 // AUDIO MUTE AND UNMUTE
@@ -299,7 +308,15 @@ socket.on('torched-on',user=>{
     setTimeout(()=>{
     $('#display').css('background','black')
     $('.torch_user').remove()
-    },5000)
+    },1000)
+     setTimeout(()=>{
+    $('#display').css('background','whitesmoke')
+    $('.torch_user').remove()
+    },1000)
+     setTimeout(()=>{
+    $('#display').css('background','black')
+    $('.torch_user').remove()
+    },1000)
     }
 })
 
@@ -369,7 +386,7 @@ Stop.addEventListener("click", () => {
 $('#start').css('visibility','visible')
 $('#stop').css('visibility','hidden')
 $('.record__video').css('visibility','visible')
-  recorder.stop();
+//   recorder.stop();
   stream.getVideoTracks()[0].stop();
 });
 
