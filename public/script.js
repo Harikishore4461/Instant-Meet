@@ -15,7 +15,7 @@ let currentUsers = []
 var peer = new Peer(undefined,{
     path:'/peerjs',
     host:'/',
-    port:'3030'
+    port:'443'
 }); 
 
 $(window).on('load', function() {
