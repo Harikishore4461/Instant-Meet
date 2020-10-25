@@ -119,10 +119,10 @@ const connectToNewuser = (userId,stream,name) =>{
         addVideoStream(video,userVideoStream,name)
     })
 }
- window.addEventListener('beforeunload', function (e) { 
-            e.preventDefault(); 
-            leaveMeeting()
-        }); 
+//  window.addEventListener('beforeunload', function (e) { 
+//             e.preventDefault(); 
+//             leaveMeeting()
+//         }); 
 /* Drag and Drop  */
 function drag(){
 let val = document.querySelectorAll('#VideoStreams')
