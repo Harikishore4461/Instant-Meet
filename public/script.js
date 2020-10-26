@@ -237,8 +237,8 @@ function leaveMeeting(){
     if(enabled){
     $('.main__video__button').click()
     }
+    socket.emit('disconnect')  
     setTimeout(()=>{
-        socket.emit('disconnect')  
          window.history.back();
     },1500)
 
