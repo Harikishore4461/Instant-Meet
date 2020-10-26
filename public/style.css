@@ -33,9 +33,13 @@ video{
     cursor:pointer;
 
 }
-#VideoStreams{
+.VideoStreams{
     -webkit-transform: scaleX(-1);
     transform: scaleX(-1);  
+}
+.ScreenStreams{
+        -webkit-transform: scaleX(1);
+    transform: scaleX(1);  
 }
 .record__video{
     

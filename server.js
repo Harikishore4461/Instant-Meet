@@ -151,7 +151,10 @@ io.on('connection',socket=>{
             await new Promise(resolve => setTimeout(resolve, 2000));
             let srcfile = get('')
             console.log(srcfile)
+            if(!user.endsWith('(Screening)') && !user.endsWith('(dummy)')){
             io.to(roomId).emit('file-shared',srcfile)
+
+            }
           })
           socket.on('torch',user=>{
             io.to(roomId).emit('torched-on',user)
@@ -181,9 +184,14 @@ io.on('connection',socket=>{
             console.log(src)
             io.to(roomId).emit('share-screen',src);
         })
-        socket.on('message',message =>{
-            io.to(roomId).emit('createMessage',message)
+        socket.on('message',message =>{  
+            if(!user.endsWith('(Screening)') && !user.endsWith('(dummy)')){
+                console.log("io" + user + message)
+                io.to(roomId).emit('createMessage',message)
+
+            }
         })
+    
         /* MUTE AND UNMUTE */
         socket.on('user-muted',(user)=>{
             console.log(user+" muted")
@@ -255,6 +263,17 @@ io.on('connection',socket=>{
             refresh()
             io.to(roomId).emit('refresh-muted',roomUsers,name)
         })
+        /* Screen share cancel */
+        socket.on('screen-share-cancel',username=>{
+             for (let i = 0; i < usersList.length; i++) {
+                if(usersList[i].name===username){
+                    usersList.splice(i,1)
+                }                              
+            }
+            refresh()
+            io.to(roomId).emit('refresh',roomUsers)
+            io.to(roomId).emit('screen-share-remove',username)
+        }) 
         // BLOCK THE USER
         socket.on('block-the-user',name=>{
               for (let i = 0; i < usersList.length; i++) {
@@ -266,7 +285,8 @@ io.on('connection',socket=>{
             io.to(roomId).emit('refresh',roomUsers)
             io.to(roomId).emit('make-user-leave',name)
         })
-        let userinfo = {
+        if(!user.endsWith('(dummy)')){
+                let userinfo = {
             name:user,
             id:userId,
             roomid:roomId,
@@ -275,8 +295,10 @@ io.on('connection',socket=>{
             hand:false,
             host:host
         }
-        console.log(host)
         usersList.push(userinfo)
+
+        }
+        // console.log(host)
      
         socket.join(roomId)
         refresh()

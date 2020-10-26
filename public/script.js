@@ -69,7 +69,7 @@ navigator.mediaDevices.getUserMedia({
 
     socket.on('user-connected', (userid,username,list) => {
         console.log(username)
-        if(username!==USERS){
+        if(username!==USERS && !username.endsWith('(dummy)')){
             connectToNewuser(userid, myVideoStream,username);
             displayNewuser(username)
             displayUsersList(list)
@@ -112,6 +112,7 @@ const shareTheFile = (src) =>{
 
 const connectToNewuser = (userId,stream,name) =>{
     const call = peer.call(userId,stream);
+    // peer.call(userId,USERS)
     const video = document.createElement("video")
     // video.id = name
     video.setAttribute("id", `${name}`);
@@ -125,9 +126,8 @@ const connectToNewuser = (userId,stream,name) =>{
 //         }); 
 /* Drag and Drop  */
 function drag(){
-let val = document.querySelectorAll('#VideoStreams')
+let val = document.querySelectorAll('.VideoStreams')
 for(let i=0;i<val.length;i++){
-    console.log("val")
     const item = val[i]
     val[i].addEventListener('click',()=>{
         displayGrid.append(item);
@@ -140,14 +140,29 @@ for(let i=0;i<val.length;i++){
 // Video added to screen
 const addVideoStream = (video,stream,name) =>{
     video.srcObject = stream;
+    console.log(stream)
     video.setAttribute("title", `${name}`);
-    video.setAttribute("id", `VideoStreams`);
+    video.setAttribute("id", `${name}`);
+    if(name){
+    if(!name.endsWith("(Screening)")){
+    video.setAttribute("class", `VideoStreams`)
+    }
+    else if(name.endsWith('(dummy)')){
+        return
+    }
+    else{
+    video.setAttribute("class", `VideoStreams ScreenStreams`)
+    }
+    }
+    else{
+    video.setAttribute("class", `VideoStreams`)
+    }
+
     video.setAttribute("draggable", `true`);
     video.addEventListener('loadedmetadata',()=>{
         video.play();
     });
     let val = document.getElementsByTagName('video')
-
     if(!oneTimeShare && !name){
         return
     }
@@ -308,16 +323,8 @@ socket.on('torched-on',user=>{
     setTimeout(()=>{
     $('#display').css('background','black')
     $('.torch_user').remove()
-    },1000)
-     setTimeout(()=>{
-    $('#display').css('background','whitesmoke')
-    $('.torch_user').remove()
-    },1000)
-     setTimeout(()=>{
-    $('#display').css('background','black')
-    $('.torch_user').remove()
-    },1000)
-    }
+    },5000)
+}
 })
 
 // Chat
@@ -338,6 +345,14 @@ const scrollToBottom = () => {
   var d = $('.chat__messages');
   d.scrollTop(d.prop("scrollHeight"));
 }
+// Screen remove
+socket.on('screen-share-remove',username=>{
+    console.log(username)
+    let dt = document.getElementById(username)
+    if(dt){
+        dt.style.display = 'none'
+    }
+})
 
 // Switch between chat and people
 $('.main__control__ppl').click(()=>{
@@ -422,20 +437,24 @@ async function startscreen(){
         });
         if(myVideoStream===myVideoStream1){
         let stream = await navigator.mediaDevices.getDisplayMedia(displayMediaOption);
-        
+        stream.inactive = false
         myVideoStream = stream; 
-        oneTimeShare = false
-        
+        console.log(myVideoStream)
+        oneTimeShare = false   
         let username = USERS+'(Screening)'
         socket.emit('join-room', ROOM_ID,userId,username,Data.host) 
             myVideo.srcObject = stream
+            myVideo.removeAttribute("class")
             const html = `<i class=" fas fa-desktop"></i>
                             <span style="font-size:18px">Stop</span>`;
             document.querySelector("#startScreen").innerHTML = html;
         }
         else{
+        let username = USERS+'(Screening)'
+        socket.emit('screen-share-cancel',username) 
             myVideoStream = myVideoStream1;
-            socket.emit('join-room', ROOM_ID,userId,USERS,Data.host) 
+            myVideo.setAttribute("class","VideoStreams")
+            socket.emit('join-room', ROOM_ID,userId,USERS+'(dummy)',Data.host) 
             myVideo.srcObject = myVideoStream1;
               const html = `<i class=" fas fa-desktop"></i>
                             <span style="font-size:18px">Share Screen</span>`;
