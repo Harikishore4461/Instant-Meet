@@ -371,10 +371,13 @@ const start = document.getElementById("start");
 const Stop = document.getElementById("stop");
 const video = document.querySelector("video");
 let recorder, stream;
-
+// console.log(myVideoStream)
 async function startRecording() {
-  stream = await navigator.mediaDevices.getDisplayMedia({
-    video: { mediaSource: "screen" }
+// const audio = myVideoStream.getAudioTracks()
+  
+stream = await navigator.mediaDevices.getDisplayMedia({
+    video: { mediaSource: "screen" },
+    audio:true
   });
   recorder = new MediaRecorder(stream);
 
@@ -403,6 +406,7 @@ $('#stop').css('visibility','hidden')
 $('.record__video').css('visibility','visible')
 //   recorder.stop();
   stream.getVideoTracks()[0].stop();
+  stream.getAudioTracks()[0].stop();
 });
 
 
