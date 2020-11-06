@@ -99,7 +99,7 @@
                         </ul>
                     </div>
                     <input class="input__msg form-control" type="text" placeholder="Type your message" />
-                      <form id="uploadForm" action="https://morning-lowlands-10142.herokuapp.com/api/file" enctype="multipart/form-data" method="post">
+                      <form id="uploadForm" action="http://localhost:3030/api/file" enctype="multipart/form-data" method="post">
                         <input type="file" name="userFile" />
                         <input class="btn btn-info upload" type="submit" value="Upload File" name="submit">
                     </form>
@@ -113,10 +113,10 @@
                 </div>
                 <div class="bottomUsersList">
                     <div style="visibility: hidden;" class="attendance">
-                        <form method="GET" action="https://morning-lowlands-10142.herokuapp.com/refresh/<%= roomid %>">
+                        <form method="GET" action="http://localhost:3030/refresh/<%= roomid %>">
                             <button class="btn btn-dark" type="submit">Refresh</button>
                         </form>
-                        <form method="GET" action="https://morning-lowlands-10142.herokuapp.com/atte">
+                        <form method="GET" action="http://localhost:3030/atte">
                             <button class="btn btn-info" type="submit">Attendance</button>
                         </form>
                     </div>

@@ -15,7 +15,7 @@ let currentUsers = []
 var peer = new Peer(undefined,{
     path:'/peerjs',
     host:'/',
-    port:'443'
+    port:'3030'
 }); 
 
 $(window).on('load', function() {
@@ -106,7 +106,7 @@ peer.on('open',(id)=>{
 })
 
 const shareTheFile = (src) =>{
-    let html = `<li class="chat__convo"><h5>${src}</h5><form action="https://morning-lowlands-10142.herokuapp.com/download${src}" method="GET"><button class="btn btn-warning" type="submit">Download File</button></form></li>`;
+    let html = `<li class="chat__convo"><h5>${src}</h5><form action="http://localhost:3030/download${src}" method="GET"><button class="btn btn-warning" type="submit">Download File</button></form></li>`;
     $('.chat__messages__list').append(html) 
 }
 
@@ -318,8 +318,8 @@ $('.main__torch').click(()=>{
 })
 socket.on('torched-on',user=>{
     if(Data.host){
-         $('#display').css('background','whitesmoke')
- $('.main__left').prepend(`<h5 class="torch_user">${user} Torched on</h5>`);
+    $('#display').css('background','whitesmoke')
+    $('.main__left').prepend(`<h5 class="torch_user">${user} Torched on</h5>`);
     setTimeout(()=>{
     $('#display').css('background','black')
     $('.torch_user').remove()
@@ -406,7 +406,7 @@ $('#stop').css('visibility','hidden')
 $('.record__video').css('visibility','visible')
 //   recorder.stop();
   stream.getVideoTracks()[0].stop();
-  stream.getAudioTracks()[0].stop();
+  stream.getAudioTracks()[0].stop(); 
 });
 
 
